@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.Serializable;
 //http://jfod.cnam.fr/SMB116/tp4_enonce/
@@ -21,10 +22,53 @@ public class MainActivity extends Activity {
     private Ticker ticker;
     private static long count;
     private BroadcastReceiver r1,r2,r3;
+    private TextView tv1, tv2, tv3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tv1 = (TextView)findViewById(R.id.tv1);
+        tv2 = (TextView)findViewById(R.id.tv2);
+        tv3 = (TextView)findViewById(R.id.tv3);
+
+        if(count <= 10)
+            tv1.setText("r1: count:" + count);
+        else
+            tv1.setText("r1: count:" + 10L);
+
+        tv2.setText("r2: count:" + count);
+        tv3.setText("r3: count:" + count);
+
+        r1 = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                count = intent.getLongExtra(Ticker.COUNT_EXTRA, 0);
+                tv1.clearComposingText();
+                tv1.setText("r1: count:" + count);
+            }
+        };
+
+        r2 = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                count = intent.getLongExtra(Ticker.COUNT_EXTRA, 0);
+                boolean abort = intent.getBooleanExtra("abortBroadcast", false);
+                tv2.clearComposingText();
+                tv2.setText("r2: count:" + count);
+                if(abort)
+                    abortBroadcast();
+            }
+        };
+
+        r3 = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                count = intent.getLongExtra(Ticker.COUNT_EXTRA, 0);
+                tv3.clearComposingText();
+                tv3.setText("r3: count:" + count);
+            }
+        };
     }
 
     @Override
@@ -43,6 +87,7 @@ public class MainActivity extends Activity {
     }
 
     public void startTicker(View view) {
+        ticker = new Ticker(this);
         ticker.startTicker();
     }
 
@@ -90,12 +135,13 @@ public class MainActivity extends Activity {
                 SystemClock.sleep(1000L);
                 count++;
                 intent.putExtra(Ticker.COUNT_EXTRA, count);
-                context.sendBroadcast(intent);
-                //if(count<=10)                                  // à décommenter pour q2
-                context.sendBroadcast(intent);
-                //else                                           // à décommenter pour q2
-                //context.sendOrderedBroadcast(intent,null); // à décommenter pour q2
-
+                //context.sendBroadcast(intent);
+                if(count <= 10)                                  // à décommenter pour q2
+                    context.sendBroadcast(intent);
+                else {// à décommenter pour q2
+                    intent.putExtra("abortBroadcast", true);
+                    context.sendOrderedBroadcast(intent, null); // à décommenter pour q2
+                }
             }
         }
     }

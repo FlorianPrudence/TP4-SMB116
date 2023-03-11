@@ -35,21 +35,21 @@
             android:text="Finish" />
     </LinearLayout>
     <TextView
+        android:id="@+id/tv1"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:textSize="32dp"
-        android:text="Bonjour">
+        android:textSize="32sp">
     </TextView>
     <TextView
+        android:id="@+id/tv2"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:textSize="32dp"
-        android:text="Bonjour">
+        android:textSize="32sp">
     </TextView>
     <TextView
+        android:id="@+id/tv3"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:textSize="32dp"
-        android:text="Bonjour">
+        android:textSize="32sp">
     </TextView>
 </LinearLayout>
