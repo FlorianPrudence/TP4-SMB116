@@ -36,7 +36,6 @@ public class MainActivity extends Activity {
             tv1.setText("r1: count:" + count);
         else
             tv1.setText("r1: count:" + 10L);
-
         tv2.setText("r2: count:" + count);
         tv3.setText("r3: count:" + count);
 
@@ -87,62 +86,44 @@ public class MainActivity extends Activity {
     }
 
     public void startTicker(View view) {
-        ticker = new Ticker(this);
-        ticker.startTicker();
+        if(ticker == null || !ticker.isAlive()) {
+            ticker = new Ticker(this);
+            ticker.startTicker();
+        }
     }
 
     public void stopTicker(View view) {
-        ticker.stopTicker();
+        if(ticker != null && !ticker.isInterrupted()) {
+            ticker.stopTicker();
+        }
     }
 
     public void finishActivity(View view) {
         finish();
     }
 
-    public void onSaveInstanceState(Bundle outState){
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(r1);
+        unregisterReceiver(r2);
+        unregisterReceiver(r3);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
         if(I)Log.i(TAG,"onSaveInstanceState");
         outState.putSerializable("ticker", ticker); // à commenter pour q3
-        // outState.putParcelable("ticker",ticker); // demandé en q3
+        //outState.putParcelable("ticker",ticker); // demandé en q3
     }
 
-    public void onRestoreInstanceState(Bundle outState){
+    @Override
+    protected void onRestoreInstanceState(Bundle outState){
+        super.onRestoreInstanceState(outState);
         if(I)Log.i(TAG,"onRestoreInstanceState");
         ticker = (Ticker)outState.getSerializable("ticker"); // à commenter pour q3
-        // ticker = (Ticker)outState.getParcelable("ticker"); // demandé en q3
-        // suivie d'une mise à jour de l'IHM
+        //ticker = (Ticker)outState.getParcelable("ticker"); // demandé en q3
     }
 
-    public class Ticker extends Thread implements Serializable {
-        // private class Ticker extends Thread implements Parcelable // ligne à décommenter en q3
-        public static final String TIME_ACTION_TIC = "time_action_tic";
-        public static final String COUNT_EXTRA = "count";
-        private Context context;
-
-
-        public Ticker(Context context){
-            this.context = context;
-        }
-        public void startTicker(){
-            this.start();
-        }
-        public void stopTicker(){
-            this.interrupt();
-        }
-        public void run(){
-            Intent intent = new Intent();
-            intent.setAction(TIME_ACTION_TIC);
-            while(!isInterrupted()){
-                SystemClock.sleep(1000L);
-                count++;
-                intent.putExtra(Ticker.COUNT_EXTRA, count);
-                //context.sendBroadcast(intent);
-                if(count <= 10)                                  // à décommenter pour q2
-                    context.sendBroadcast(intent);
-                else {// à décommenter pour q2
-                    intent.putExtra("abortBroadcast", true);
-                    context.sendOrderedBroadcast(intent, null); // à décommenter pour q2
-                }
-            }
-        }
-    }
 }
