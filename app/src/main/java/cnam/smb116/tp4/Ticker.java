@@ -29,12 +29,10 @@ public class Ticker extends Thread implements Serializable {
             SystemClock.sleep(1000L);
             count++;
             intent.putExtra(Ticker.COUNT_EXTRA, count);
-            //context.sendBroadcast(intent);
-            if(count <= 10)                                  // à décommenter pour q2
+            if(count <= 10)
                 context.sendBroadcast(intent);
-            else {// à décommenter pour q2
-                intent.putExtra("abortBroadcast", true);
-                context.sendOrderedBroadcast(intent, null); // à décommenter pour q2
+            else {
+                context.sendOrderedBroadcast(intent, null);
             }
         }
     }

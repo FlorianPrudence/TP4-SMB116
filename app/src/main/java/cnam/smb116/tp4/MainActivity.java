@@ -52,10 +52,9 @@ public class MainActivity extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 count = intent.getLongExtra(Ticker.COUNT_EXTRA, 0);
-                boolean abort = intent.getBooleanExtra("abortBroadcast", false);
                 tv2.clearComposingText();
                 tv2.setText("r2: count:" + count);
-                if(abort)
+                if(isOrderedBroadcast() && count > 10)
                     abortBroadcast();
             }
         };
